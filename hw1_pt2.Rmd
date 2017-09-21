@@ -1,0 +1,97 @@
+---
+title: "STA426 Homework 1 Pt 2"
+author: "Balint Tamasi"
+date: "9/21/2017"
+output: html_document
+---
+
+Solution of the [R Self-Quiz](http://www.biostat.jhsph.edu/~rpeng/coursera/selfquiz/quiz.html)
+
+### Download and read in the data
+
+```{r, message = FALSE, warning = FALSE}
+library("RCurl")
+file <- getURL('http://www.biostat.jhsph.edu/~rpeng/coursera/selfquiz/selfquiz-data.csv',
+               ssl.verifyhost = FALSE, ssl.verifypeer = FALSE)
+dataset <- read.csv(textConnection(file))
+```
+
+### Column and row names
+
+```{r}
+colnames(dataset)
+```
+
+```{r}
+rownames(dataset)
+```
+
+### Head, number of observations, tail
+
+```{r}
+head(dataset, 6)
+```
+
+```{r}
+nrow(dataset)
+```
+
+
+```{r}
+tail(dataset, 6)
+```
+
+### Mean of Ozone
+
+```{r}
+sum(is.na(dataset$Ozone))
+```
+
+```{r}
+mean(dataset$Ozone, na.rm = TRUE)
+```
+
+### Filter the data
+
+```{r}
+dataset[which(dataset$Ozone > 31 & dataset$Temp > 90), ]
+```
+
+### Variable means and standard deviations
+
+Means
+
+```{r}
+means <- vector("numeric", 6)
+for (i in 1:6) means[i] <- mean(dataset[[i]], na.rm = TRUE)
+means
+```
+
+Standard deviations
+
+```{r}
+apply(dataset, MARGIN = 2, sd, na.rm = TRUE)
+```
+
+Means by Month
+
+```{r}
+sapply(split(dataset, dataset$Month), function(df) mean(df$Ozone, na.rm = TRUE))
+```
+
+Alternatively, we can calculate this using **dplyr**.
+
+```{r message = FALSE, warning = FALSE}
+library("dplyr")
+dataset %>%
+  group_by(Month) %>%
+  summarize(Ozone_means = mean(Ozone, na.rm = TRUE))
+```
+
+### Random subsample
+
+```{r}
+set.seed(13)
+dataset[sample(nrow(dataset), 5), ]
+```
+
